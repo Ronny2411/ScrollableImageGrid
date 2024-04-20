@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ScrollableImageGrid</string>
+    <string name="network_error_icon">Network error icon</string>
+</resources>
