@@ -10,31 +10,31 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class ImageCache(private val context: Context) {
-    private val memoryCache = mutableMapOf<String, Bitmap>()
-    private val diskCacheDirectory = File(context.cacheDir, "image_cache")
+    private val imageMemoryCache = mutableMapOf<String, Bitmap>()
+    private val cacheDirectory = File(context.cacheDir, "image_cache")
 
     init {
-        diskCacheDirectory.mkdirs()
+        cacheDirectory.mkdirs()
     }
 
     suspend fun getImage(url: String): Bitmap? = withContext(Dispatchers.IO) {
-        var bitmap: Bitmap? = memoryCache[url]
+        var bitmap: Bitmap? = imageMemoryCache[url]
         if (bitmap == null) {
-            bitmap = loadFromDiskCache(url)
+            bitmap = loadImageFromDiskCache(url)
             if (bitmap != null) {
-                memoryCache[url] = bitmap
+                imageMemoryCache[url] = bitmap
             }
         }
         bitmap
     }
 
     suspend fun setImage(url: String, bitmap: Bitmap) = withContext(Dispatchers.IO) {
-        memoryCache[url] = bitmap
-        saveToDiskCache(url, bitmap)
+        imageMemoryCache[url] = bitmap
+        saveImageToDiskCache(url, bitmap)
     }
 
-    private fun loadFromDiskCache(url: String): Bitmap? {
-        val file = File(diskCacheDirectory, getFileName(url))
+    private fun loadImageFromDiskCache(url: String): Bitmap? {
+        val file = File(cacheDirectory, getFileName(url))
         return if (file.exists()) {
             FileInputStream(file).use { stream ->
                 BitmapFactory.decodeStream(stream)
@@ -44,8 +44,8 @@ class ImageCache(private val context: Context) {
         }
     }
 
-    private fun saveToDiskCache(url: String, bitmap: Bitmap) {
-        val file = File(diskCacheDirectory, getFileName(url))
+    private fun saveImageToDiskCache(url: String, bitmap: Bitmap) {
+        val file = File(cacheDirectory, getFileName(url))
         FileOutputStream(file).use { stream ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
             stream.flush()
