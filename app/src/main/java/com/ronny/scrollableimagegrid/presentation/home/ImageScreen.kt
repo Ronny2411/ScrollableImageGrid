@@ -73,7 +73,7 @@ fun ImageItem(imageData: ImageDataItem, imageCache: ImageCache) {
     if (bitmap==null){
         PlaceholderImage(modifier = Modifier.size(IMAGE_SIZE))
     } else {
-        val resizedBitmap = bitmap?.let { resizeBitmap(it, 200, 200) }
+        val resizedBitmap = bitmap?.let { resizeBitmap(it, 150, 150) }
         resizedBitmap?.let {
             Image(
                 bitmap = it.asImageBitmap(),
